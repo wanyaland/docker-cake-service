@@ -1,3 +1,4 @@
+FROM debian
 FROM python:3.6-slim
 
 COPY dist/ .
