@@ -31,7 +31,7 @@ matrix:
      services:
        - docker
      env:
-       - IMAGE_NAME=wanyama/cake-service
+       - IMAGE_NAME=acme-corp/cake-service
        - REGISTRY_USER=nachwera 
        - REGISTRY_PASS=knightf6
      install: []
