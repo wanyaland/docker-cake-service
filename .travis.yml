@@ -1,44 +1,55 @@
+
 language: python
 cache: pip
 python:
+
   - '3.5'
+
   - '3.6'
 
 install: pip install -r requirements-dev.txt
 script: pytest
 deploy:
+
   provider: pypi
+
   user: wanyaland
-  password:
-    secure: "asdasdas"
+
+  password: Nachwera123!
+
   distributions: sdist bdist_wheel
+
   on:
+
     tags: true
 
 matrix:
   include:
-    - sudo: required
-      dist: trusty
-      python: '3.6'
-      services:
-        - docker 
-      env:
-        - IMAGE_NAME=wanyama/cake-service
-        - REGISTRY_USER=nachwera
-        - REGISTRY_PASS=knightf6
-      
-      install: []
-      before_script:
-        - docker pull "${IMAGE_NAME}:develop" || true
-      script:
-        - python setup.py bdist_wheel
-        - docker build --pull --cache-from "${IMAGE_NAME}:develop" --tag "${IMAGE_NAME}"
-      
-      before_deploy:
-        - docker login -u "$REGISTRY_USER" -p "$REGISTRY_PASS"
-        - git_sha= "$(git rev-parse --short HEAD)"
-        - docker tag "$IMAGE_NAME" "${IMAGE_NAME}:develop"
-        - docker tag "$IMAGE_NAME" "${IMAGE_NAME}:${git-sha}-develop"
-        on:
+     sudo: required
+     dist: trusty
+     python: '3.6'
+     services:
+       - docker
+     env:
+       - IMAGE_NAME=wanyama/cake-service
+       - REGISTRY_USER=nachwera 
+       - REGISTRY_PASS=knightf6
+     install: []
+     before_script:
+       - docker pull "${IMAGE_NAME}:develop" --tag "$IMAGE_NAME" .
+     script:
+       - python setup.py bdist_wheel
+       - docker build --pull --cache-from "${IMAGE_NAME}:develop" --tag "$IMAGE_NAME" .
+     before_deploy:
+       - docker login -u "$REGISTRY_USER" -p "$REGISTRY_PASS"
+       - git_sha="$(git rev-parse --short HEAD)"
+       - docker tag "$IMAGE_NAME" "${IMAGE_NAME}:develop"
+       - docker tag "$IMAGE_NAME" "${IMAGE_NAME}:${git_sha}-develop"
+     
+     deploy:  
+       provider: script
+       script: docker push "${IMAGE_NAME}:develop" && docker push "${IMAGE_NAME}:${git_sha}-develop"
+       on:
           branch: develop
+  
 
